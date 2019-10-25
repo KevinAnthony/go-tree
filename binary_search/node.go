@@ -1,14 +1,14 @@
 package binary_search
 
-import "github.com/KevinAnthony/tree"
+import "github.com/KevinAnthony/go-tree"
 
 type binaryNode struct {
-	data tree.NodeData
-	left *binaryNode
+	data  tree.Data
+	left  *binaryNode
 	right *binaryNode
 }
 
-func NewNode(data interface{}) tree.Node{
+func NewNode(data tree.Data) tree.Node {
 	return binaryNode{
 		data:  data,
 		left:  nil,
@@ -16,7 +16,7 @@ func NewNode(data interface{}) tree.Node{
 	}
 }
 
-func (b binaryNode) GetData() tree.NodeData {
+func (b binaryNode) GetData() tree.Data {
 	return b.data
 }
 

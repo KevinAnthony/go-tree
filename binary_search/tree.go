@@ -1,13 +1,13 @@
 package binary_search
 
-import "github.com/KevinAnthony/tree"
+import "github.com/KevinAnthony/go-tree"
 
 type binarySearchTree struct {
 	count int64
-	root *binaryNode
+	root  *binaryNode
 }
 
-func NewTree(data ...tree.NodeData) tree.Tree {
+func NewTree(data ...tree.Data) tree.Tree {
 	tree := binarySearchTree{}
 	for _, d := range data {
 		tree.Insert(d)
@@ -19,7 +19,7 @@ func (b binarySearchTree) Count() int64 {
 	return b.count
 }
 
-func (b binarySearchTree) Insert(value tree.NodeData) {
+func (b binarySearchTree) Insert(value tree.Data) {
 	node := &binaryNode{
 		data:  value,
 		left:  nil,
@@ -38,19 +38,19 @@ func (b binarySearchTree) Insert(value tree.NodeData) {
 
 }
 
-func (b binarySearchTree) Delete(value tree.NodeData, allInstances bool) bool {
+func (b binarySearchTree) Delete(value tree.Data, allInstances bool) bool {
 	panic("implement me")
 }
 
-func (b binarySearchTree) Search(tree.NodeData) tree.Node {
+func (b binarySearchTree) Search(tree.Data) tree.Node {
 	panic("implement me")
 }
 
-func (b binarySearchTree) Asc() tree.NodeIter {
+func (b binarySearchTree) Asc() <-chan tree.Node {
 	panic("implement me")
 }
 
-func (b binarySearchTree) Desc() tree.NodeIter {
+func (b binarySearchTree) Desc() <-chan tree.Node {
 	panic("implement me")
 }
 
