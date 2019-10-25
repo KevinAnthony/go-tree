@@ -1,24 +1,23 @@
 package tree
 
-
-type Node interface{
-	GetData() NodeData
+type Node interface {
+	GetData() Data
 	IsLeaf() bool
 }
 
-type Tree interface{
+type Tree interface {
 	Count() int64
-	Insert(value NodeData)
-	Delete(value NodeData,allInstances bool) bool
-	Search(NodeData) Node
+	Insert(value Data)
+	Delete(value Data, allInstances bool) bool
+	Search(Data) Node
 	Asc() <-chan Node
 	Desc() <-chan Node
 }
 
-type NodeData interface{
-	GreaterThan(NodeData) bool
-	LessThan(NodeData) bool
-	GreaterThanOrEqual(NodeData) bool
-	LessThanOrEqual(NodeData) bool
-	Equals(NodeData) bool
+type Data interface {
+	GreaterThan(Data) bool
+	LessThan(Data) bool
+	GreaterThanOrEqual(Data) bool
+	LessThanOrEqual(Data) bool
+	Equals(Data) bool
 }
