@@ -1,4 +1,4 @@
-package tree
+package types
 
 type Node interface {
 	GetData() Data
@@ -8,10 +8,15 @@ type Node interface {
 type Tree interface {
 	Count() int64
 	Insert(value Data)
+	InsertMany(value ...Data)
 	Delete(value Data, allInstances bool) bool
-	Search(Data) Node
+	Search(Data) <-chan Node
+	Contains(Data) bool
 	Asc() <-chan Node
 	Desc() <-chan Node
+	Rebalance()
+	IsBalanced() bool
+	AutoRebalance(bool)
 }
 
 type Data interface {
