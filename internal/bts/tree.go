@@ -18,8 +18,10 @@ func NewTree(data ...types.Data) types.Tree {
 	t := binarySearchTree{
 		autoRebalance: true,
 	}
-	t.InsertMany(data...)
-	t.Rebalance()
+	if len(data) > 0 {
+		t.InsertMany(data...)
+		t.Rebalance()
+	}
 	return &t
 }
 
@@ -101,7 +103,7 @@ func (b *binarySearchTree) Desc() <-chan types.Node {
 }
 
 func (b *binarySearchTree) Rebalance() {
-	panic("implement me")
+	//TODO implement
 }
 
 func (b *binarySearchTree) IsBalanced() bool {

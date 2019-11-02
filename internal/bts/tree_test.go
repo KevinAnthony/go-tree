@@ -12,9 +12,20 @@ import (
 func TestNewTree(t *testing.T) {
 	Convey("NewTree", t, func() {
 		Convey("should return valid tree", func() {
-
+			f := func() {
+				bts.NewTree()
+			}
+			So(f, ShouldNotPanic)
 		})
-		Convey("should accept unordered list and return ordered list", func() {})
+		Convey("should accept unordered list and return ordered list", func() {
+			f := func() {
+				t := bts.NewTree(unordered()...)
+				c := t.Asc()
+				actual := drain(c)
+				So(actual, ShouldResemble, asc())
+			}
+			So(f, ShouldNotPanic)
+		})
 	})
 }
 
@@ -23,11 +34,14 @@ func TestBinarySearchTree_Asc(t *testing.T) {
 		Convey("should return asc ordered list", func() {
 			t := bts.NewTree(unordered()...)
 			c := t.Asc()
-			actual := make([]types.Data, 0, len(asc()))
-			for data := range c {
-				actual = append(actual, data.GetData())
-			}
+			actual := drain(c)
 			So(actual, ShouldResemble, asc())
+		})
+		Convey("should return no values when tree is empty", func() {
+			t := bts.NewTree()
+			c := t.Asc()
+			actual := drain(c)
+			So(actual, ShouldBeEmpty)
 		})
 	})
 }
@@ -37,11 +51,14 @@ func TestBinarySearchTree_Desc(t *testing.T) {
 		Convey("should return asc ordered list", func() {
 			t := bts.NewTree(unordered()...)
 			c := t.Desc()
-			actual := make([]types.Data, 0, len(asc()))
-			for data := range c {
-				actual = append(actual, data.GetData())
-			}
+			actual := drain(c)
 			So(actual, ShouldResemble, desc())
+		})
+		Convey("should return no values when tree is empty", func() {
+			t := bts.NewTree()
+			c := t.Desc()
+			actual := drain(c)
+			So(actual, ShouldBeEmpty)
 		})
 	})
 }
@@ -54,37 +71,91 @@ func TestBinarySearchTree_Search(t *testing.T) {
 			types.NewInt(3),
 			types.NewInt(3),
 		}
-		t := bts.NewTree(unordered()...)
-		t.InsertMany(expected[1], expected[2], expected[3])
-		Convey("should return 4 values when value is in the tree", func() {
-			c := t.Search(types.NewInt(3))
-			actual := make([]types.Data, 0, len(expected))
-			for data := range c {
-				actual = append(actual, data.GetData())
-			}
-			So(actual, ShouldResemble, expected)
+		Convey("when tree is empty", func() {
+			t := bts.NewTree()
+			Convey("should return no data", func() {
+				c := t.Search(types.NewInt(3))
+				actual := drain(c)
+				So(actual, ShouldBeEmpty)
+			})
 		})
-		Convey("should return 0 values when value is not in tree", func() {
-			c := t.Search(types.NewInt(7))
-			actual := make([]types.Data, 0, len(expected))
-			for data := range c {
-				actual = append(actual, data.GetData())
-			}
-			So(actual, ShouldHaveLength, 0)
+		Convey("when tree has values", func() {
+			t := bts.NewTree(unordered()...)
+			t.InsertMany(expected[1], expected[2], expected[3])
+			Convey("should return 4 values when value is in the tree", func() {
+				c := t.Search(types.NewInt(3))
+				actual := drain(c)
+				So(actual, ShouldResemble, expected)
+			})
+			Convey("should return 0 values when value is not in tree", func() {
+				c := t.Search(types.NewInt(7))
+				actual := drain(c)
+				So(actual, ShouldHaveLength, 0)
+			})
 		})
 	})
 }
 
 func TestBinarySearchTree_Contains(t *testing.T) {
 	Convey("Contains", t, func() {
-		t := bts.NewTree(unordered()...)
-		Convey("should return true when tree contains value", func() {
-			So(t.Contains(types.NewInt(4)), ShouldBeTrue)
+		Convey("when tree is empty", func() {
+			t := bts.NewTree()
+			Convey("should not contain anything", func() {
+				So(t.Contains(types.NewInt(6)), ShouldBeFalse)
+			})
 		})
-		Convey("should return false when tree contains value", func() {
-			So(t.Contains(types.NewInt(6)), ShouldBeFalse)
+		Convey("when tree has data", func() {
+			t := bts.NewTree(unordered()...)
+			Convey("should return true when tree contains value", func() {
+				So(t.Contains(types.NewInt(4)), ShouldBeTrue)
+			})
+			Convey("should return false when tree contains value", func() {
+				So(t.Contains(types.NewInt(6)), ShouldBeFalse)
+			})
 		})
 	})
+}
+
+func TestBinarySearchTree_AutoRebalance(t *testing.T) {
+	//TODO the best way to test this seems to be to have a tree that needs balancing,
+	// 		turn on autobalancing, and see if it's balanced
+	// The 2nd convey is to have a tree that IS balnanced,
+	// 		turn off authbalancing, unbalance it, then make sure it remains unbalanced.
+}
+
+func TestBinarySearchTree_Count(t *testing.T) {
+	Convey("Count", t, func() {
+		t := bts.NewTree()
+		Convey("should return 0 on empty tree", func() {
+			So(t.Count(), ShouldEqual, 0)
+		})
+		Convey("should return correct count", func() {
+			for i := 0; i <= 1024; i++ {
+				t.Insert(types.NewInt(i))
+				So(t.Count(), ShouldEqual, i+1)
+			}
+		})
+	})
+}
+
+func TestBinarySearchTree_Delete(t *testing.T) {
+
+}
+
+func TestBinarySearchTree_Insert(t *testing.T) {
+
+}
+
+func TestBinarySearchTree_InsertMany(t *testing.T) {
+
+}
+
+func TestBinarySearchTree_IsBalanced(t *testing.T) {
+
+}
+
+func TestBinarySearchTree_Rebalance(t *testing.T) {
+
 }
 
 func unordered() []types.Data {
@@ -96,6 +167,7 @@ func unordered() []types.Data {
 		types.NewInt(2),
 	}
 }
+
 func asc() []types.Data {
 	return []types.Data{
 		types.NewInt(1),
@@ -105,6 +177,7 @@ func asc() []types.Data {
 		types.NewInt(5),
 	}
 }
+
 func desc() []types.Data {
 	return []types.Data{
 		types.NewInt(5),
@@ -113,4 +186,12 @@ func desc() []types.Data {
 		types.NewInt(2),
 		types.NewInt(1),
 	}
+}
+
+func drain(c <-chan types.Node) []types.Data {
+	actual := make([]types.Data, 0)
+	for data := range c {
+		actual = append(actual, data.GetData())
+	}
+	return actual
 }
