@@ -1,4 +1,4 @@
-package binary_search
+package bts
 
 import (
 	"sync"
@@ -48,9 +48,17 @@ func (b *binarySearchTree) InsertMany(values ...types.Data) {
 	b.autoRebalanceAsync()
 }
 
-func (b *binarySearchTree) Delete(value types.Data, allInstances bool) bool {
-	panic("implement me")
-	//b.autoRebalanceAsync()
+func (b *binarySearchTree) Delete(value types.Data) {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+	if b.root == nil {
+		return
+	}
+	if b.root.IsLeaf() && b.root.data.Equals(value) {
+		b.root = nil
+		return
+	}
+	b.root.delete(value)
 }
 
 func (b *binarySearchTree) Search(data types.Data) <-chan types.Node {

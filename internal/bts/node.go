@@ -1,4 +1,4 @@
-package binary_search
+package bts
 
 import (
 	"math"
@@ -10,14 +10,6 @@ type binaryNode struct {
 	data  types.Data
 	left  *binaryNode
 	right *binaryNode
-}
-
-func NewNode(data types.Data) types.Node {
-	return binaryNode{
-		data:  data,
-		left:  nil,
-		right: nil,
-	}
 }
 
 func (b binaryNode) GetData() types.Data {
@@ -101,4 +93,32 @@ func (b *binaryNode) isBalanced() (bool, float64) {
 	}
 	return math.Abs(leftHeight-rightHeight) <= 1 && leftBalanced && rightBalanced,
 		math.Max(leftHeight, rightHeight) + 1
+}
+
+func (b *binaryNode) delete(data types.Data) *binaryNode {
+	if b.data.GreaterThan(data) {
+		b.left = b.left.delete(data)
+		return b
+	}
+	if b.data.LessThan(data) {
+		b.right = b.right.delete(data)
+		return b
+	}
+	if b.left == nil {
+		return b.right
+	}
+	if b.right == nil {
+		return b.left
+	}
+	successorParent := b.right
+	successor := b.right
+	for successor.left != nil {
+		successorParent = successor
+		successor = successor.left
+	}
+	successorParent.left = successor.right
+
+	// Copy Successor Data to root
+	b.data = successor.data
+	return b
 }

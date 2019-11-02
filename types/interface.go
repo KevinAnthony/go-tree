@@ -9,7 +9,7 @@ type Tree interface {
 	Count() int64
 	Insert(value Data)
 	InsertMany(value ...Data)
-	Delete(value Data, allInstances bool) bool
+	Delete(value Data)
 	Search(Data) <-chan Node
 	Contains(Data) bool
 	Asc() <-chan Node
