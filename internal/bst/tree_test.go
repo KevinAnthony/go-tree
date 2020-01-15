@@ -139,7 +139,53 @@ func TestBinarySearchTree_Count(t *testing.T) {
 }
 
 func TestBinarySearchTree_Delete(t *testing.T) {
-
+	Convey("Delete", t, func() {
+		t := bts.NewTree(unordered()...)
+		t.AutoRebalance(false)
+		Convey("should return tree when root is nil", func() {
+			t := bts.NewTree()
+			t.Delete(types.NewInt(77))
+			c := t.Asc()
+			actual := drain(c)
+			So(actual, ShouldHaveLength, 0)
+		})
+		Convey("should keep other nodes when deleting root", func() {
+			Convey("and count == 1", func() {
+				t := bts.NewTree(types.NewInt(11))
+				t.Delete(types.NewInt(11))
+				c := t.Asc()
+				actual := drain(c)
+				So(actual, ShouldHaveLength, 0)
+			})
+			Convey("and count > 1", func() {
+				t.Delete(types.NewInt(3))
+				c := t.Asc()
+				actual := drain(c)
+				So(actual, ShouldHaveLength, len(unordered())-1)
+				So(actual, ShouldNotContain, types.NewInt((3)))
+			})
+		})
+		Convey("should keep other nodes when deleting leaf", func() {
+			t.Delete(types.NewInt(10))
+			c := t.Asc()
+			actual := drain(c)
+			So(actual, ShouldHaveLength, len(unordered())-1)
+			So(actual, ShouldNotContain, types.NewInt((10)))
+		})
+		// Convey("should keep other nodes when deleting middle node", func() {
+		// 	t.Delete(types.NewInt(9))
+		// 	c := t.Asc()
+		// 	actual := drain(c)
+		// 	So(actual, ShouldHaveLength, len(unordered())-1)
+		// 	So(actual, ShouldNotContain, types.NewInt((9)))
+		// })
+		Convey("should keep other nodes when deleting nothing, called with missing type", func() {
+			t.Delete(types.NewInt(99))
+			c := t.Asc()
+			actual := drain(c)
+			So(actual, ShouldHaveLength, len(unordered()))
+		})
+	})
 }
 
 func TestBinarySearchTree_Insert(t *testing.T) {
@@ -158,13 +204,19 @@ func TestBinarySearchTree_Rebalance(t *testing.T) {
 
 }
 
+//unbalanced tree
 func unordered() []types.Data {
 	return []types.Data{
 		types.NewInt(3),
+		types.NewInt(6),
 		types.NewInt(4),
+		types.NewInt(9),
+		types.NewInt(7),
+		types.NewInt(8),
 		types.NewInt(1),
 		types.NewInt(5),
 		types.NewInt(2),
+		types.NewInt(10),
 	}
 }
 
@@ -175,11 +227,21 @@ func asc() []types.Data {
 		types.NewInt(3),
 		types.NewInt(4),
 		types.NewInt(5),
+		types.NewInt(6),
+		types.NewInt(7),
+		types.NewInt(8),
+		types.NewInt(9),
+		types.NewInt(10),
 	}
 }
 
 func desc() []types.Data {
 	return []types.Data{
+		types.NewInt(10),
+		types.NewInt(9),
+		types.NewInt(8),
+		types.NewInt(7),
+		types.NewInt(6),
 		types.NewInt(5),
 		types.NewInt(4),
 		types.NewInt(3),

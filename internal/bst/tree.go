@@ -58,6 +58,7 @@ func (b *binarySearchTree) Delete(value types.Data) {
 	}
 	if b.root.IsLeaf() && b.root.data.Equals(value) {
 		b.root = nil
+		b.count = 0
 		return
 	}
 	b.root.delete(value)

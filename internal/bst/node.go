@@ -96,6 +96,9 @@ func (b *binaryNode) isBalanced() (bool, float64) {
 }
 
 func (b *binaryNode) delete(data types.Data) *binaryNode {
+	if b == nil {
+		return nil
+	}
 	if b.data.GreaterThan(data) {
 		b.left = b.left.delete(data)
 		return b
