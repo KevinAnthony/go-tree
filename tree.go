@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"github.com/KevinAnthony/go-tree/internal/bts"
+	"github.com/KevinAnthony/go-tree/internal/bst"
 	"github.com/KevinAnthony/go-tree/types"
 )
 
