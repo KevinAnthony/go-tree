@@ -12,3 +12,6 @@
 *.out
 
 .idea
+.vscode
+vendor
+go.sum
