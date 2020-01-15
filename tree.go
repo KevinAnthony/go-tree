@@ -14,7 +14,7 @@ const (
 func New(t Type, data ...types.Data) types.Tree {
 	switch t {
 	case BinarySearchTree:
-		return bts.NewTree(data...)
+		return bst.NewTree(data...)
 	default:
 		panic("invalid tree type")
 	}

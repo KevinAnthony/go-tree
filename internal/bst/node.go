@@ -1,4 +1,4 @@
-package bts
+package bst
 
 import (
 	"math"

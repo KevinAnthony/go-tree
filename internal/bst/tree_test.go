@@ -1,4 +1,4 @@
-package bts_test
+package bst_test
 
 import (
 	"testing"
@@ -13,13 +13,13 @@ func TestNewTree(t *testing.T) {
 	Convey("NewTree", t, func() {
 		Convey("should return valid tree", func() {
 			f := func() {
-				bts.NewTree()
+				bst.NewTree()
 			}
 			So(f, ShouldNotPanic)
 		})
 		Convey("should accept unordered list and return ordered list", func() {
 			f := func() {
-				t := bts.NewTree(unordered()...)
+				t := bst.NewTree(unordered()...)
 				c := t.Asc()
 				actual := drain(c)
 				So(actual, ShouldResemble, asc())
@@ -32,13 +32,13 @@ func TestNewTree(t *testing.T) {
 func TestBinarySearchTree_Asc(t *testing.T) {
 	Convey("Asc", t, func() {
 		Convey("should return asc ordered list", func() {
-			t := bts.NewTree(unordered()...)
+			t := bst.NewTree(unordered()...)
 			c := t.Asc()
 			actual := drain(c)
 			So(actual, ShouldResemble, asc())
 		})
 		Convey("should return no values when tree is empty", func() {
-			t := bts.NewTree()
+			t := bst.NewTree()
 			c := t.Asc()
 			actual := drain(c)
 			So(actual, ShouldBeEmpty)
@@ -49,13 +49,13 @@ func TestBinarySearchTree_Asc(t *testing.T) {
 func TestBinarySearchTree_Desc(t *testing.T) {
 	Convey("Desc", t, func() {
 		Convey("should return asc ordered list", func() {
-			t := bts.NewTree(unordered()...)
+			t := bst.NewTree(unordered()...)
 			c := t.Desc()
 			actual := drain(c)
 			So(actual, ShouldResemble, desc())
 		})
 		Convey("should return no values when tree is empty", func() {
-			t := bts.NewTree()
+			t := bst.NewTree()
 			c := t.Desc()
 			actual := drain(c)
 			So(actual, ShouldBeEmpty)
@@ -72,7 +72,7 @@ func TestBinarySearchTree_Search(t *testing.T) {
 			types.NewInt(3),
 		}
 		Convey("when tree is empty", func() {
-			t := bts.NewTree()
+			t := bst.NewTree()
 			Convey("should return no data", func() {
 				c := t.Search(types.NewInt(3))
 				actual := drain(c)
@@ -80,7 +80,7 @@ func TestBinarySearchTree_Search(t *testing.T) {
 			})
 		})
 		Convey("when tree has values", func() {
-			t := bts.NewTree(unordered()...)
+			t := bst.NewTree(unordered()...)
 			t.InsertMany(expected[1], expected[2], expected[3])
 			Convey("should return 4 values when value is in the tree", func() {
 				c := t.Search(types.NewInt(3))
@@ -99,13 +99,13 @@ func TestBinarySearchTree_Search(t *testing.T) {
 func TestBinarySearchTree_Contains(t *testing.T) {
 	Convey("Contains", t, func() {
 		Convey("when tree is empty", func() {
-			t := bts.NewTree()
+			t := bst.NewTree()
 			Convey("should not contain anything", func() {
 				So(t.Contains(types.NewInt(6)), ShouldBeFalse)
 			})
 		})
 		Convey("when tree has data", func() {
-			t := bts.NewTree(unordered()...)
+			t := bst.NewTree(unordered()...)
 			Convey("should return true when tree contains value", func() {
 				So(t.Contains(types.NewInt(4)), ShouldBeTrue)
 			})
@@ -125,7 +125,7 @@ func TestBinarySearchTree_AutoRebalance(t *testing.T) {
 
 func TestBinarySearchTree_Count(t *testing.T) {
 	Convey("Count", t, func() {
-		t := bts.NewTree()
+		t := bst.NewTree()
 		Convey("should return 0 on empty tree", func() {
 			So(t.Count(), ShouldEqual, 0)
 		})
