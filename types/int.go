@@ -1,10 +1,16 @@
 package types
 
+import "strconv"
+
 type intData int
 
 func NewInt(i int) Data {
 	d := intData(i)
 	return &d
+}
+
+func (i intData) String() string {
+	return strconv.Itoa(int(i))
 }
 
 func (i intData) GreaterThan(d Data) bool {

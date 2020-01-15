@@ -55,13 +55,16 @@ func (b *binaryNode) postorder(c chan<- types.Node) {
 }
 
 func (b *binaryNode) search(data types.Data, c chan<- types.Node) {
-	if b.left != nil && b.left.data.LessThanOrEqual(data) {
+	if b == nil {
+		return
+	}
+	if b.data.GreaterThan(data) {
 		b.left.search(data, c)
 	}
 	if b.data.Equals(data) {
 		c <- b
 	}
-	if b.right != nil && b.right.data.GreaterThanOrEqual(data) {
+	if b.data.LessThanOrEqual(data) {
 		b.right.search(data, c)
 	}
 }
@@ -95,33 +98,20 @@ func (b *binaryNode) isBalanced() (bool, float64) {
 		math.Max(leftHeight, rightHeight) + 1
 }
 
-func (b *binaryNode) delete(data types.Data) *binaryNode {
-	if b == nil {
-		return nil
+//
+func (b *binaryNode) find(data types.Data) (*binaryNode, *binaryNode) {
+	cur := b
+	rent := b
+	for cur != nil {
+		if cur.data.Equals(data) {
+			return rent, cur
+		}
+		rent = cur
+		if cur.data.GreaterThan(data) {
+			cur = cur.left
+		} else {
+			cur = cur.right
+		}
 	}
-	if b.data.GreaterThan(data) {
-		b.left = b.left.delete(data)
-		return b
-	}
-	if b.data.LessThan(data) {
-		b.right = b.right.delete(data)
-		return b
-	}
-	if b.left == nil {
-		return b.right
-	}
-	if b.right == nil {
-		return b.left
-	}
-	successorParent := b.right
-	successor := b.right
-	for successor.left != nil {
-		successorParent = successor
-		successor = successor.left
-	}
-	successorParent.left = successor.right
-
-	// Copy Successor Data to root
-	b.data = successor.data
-	return b
+	return nil, nil
 }

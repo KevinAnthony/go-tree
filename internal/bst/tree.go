@@ -20,7 +20,6 @@ func NewTree(data ...types.Data) types.Tree {
 	}
 	if len(data) > 0 {
 		t.InsertMany(data...)
-		t.Rebalance()
 	}
 	return &t
 }
@@ -47,21 +46,74 @@ func (b *binarySearchTree) InsertMany(values ...types.Data) {
 	for _, value := range values {
 		b.Insert(value)
 	}
-	b.autoRebalanceAsync()
+	b.autoRebalanceMaybe()
 }
 
-func (b *binarySearchTree) Delete(value types.Data) {
+func (b *binarySearchTree) Delete(data types.Data) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	if b.root == nil {
 		return
 	}
-	if b.root.IsLeaf() && b.root.data.Equals(value) {
-		b.root = nil
-		b.count = 0
+	// root has no children
+	if b.root.IsLeaf() {
+		// if we match, delete
+		if b.root.data.Equals(data) {
+			b.root = nil
+			b.count = 0
+		}
 		return
 	}
-	b.root.delete(value)
+
+	parent, node := b.root.find(data)
+	if parent == nil || node == nil {
+		return
+	}
+	b.count--
+	switch {
+	case node.IsLeaf():
+		if parent.left == node {
+			parent.left = nil
+		} else {
+			parent.right = nil
+		}
+		return
+	case node.left == nil:
+		if node == b.root {
+			b.root = node.right
+			return
+		}
+		if parent.left == node {
+			parent.left = node.right
+		} else {
+			parent.right = node.right
+		}
+		return
+
+	case node.right == nil:
+		if node == b.root {
+			b.root = node.left
+			return
+		}
+		if parent.left == node {
+			parent.left = node.left
+		} else {
+			parent.right = node.left
+		}
+		return
+	case node.right.left == nil:
+		node.data = node.right.data
+		node.right = node.right.right
+	default:
+		successor := node.right
+		successorRent := node
+		for successor.left != nil {
+			successorRent = successor
+			successor = successor.left
+		}
+		node.data = successor.data
+		successorRent.left = successor.right
+	}
 }
 
 func (b *binarySearchTree) Search(data types.Data) <-chan types.Node {
@@ -104,6 +156,8 @@ func (b *binarySearchTree) Desc() <-chan types.Node {
 }
 
 func (b *binarySearchTree) Rebalance() {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
 	//TODO implement
 }
 
@@ -138,12 +192,11 @@ func (b *binarySearchTree) detectBalance() {
 	b.isBalanced, _ = b.root.isBalanced()
 }
 
-func (b *binarySearchTree) autoRebalanceAsync() {
+//TODO i would love for this to be async
+func (b *binarySearchTree) autoRebalanceMaybe() {
 	if b.autoRebalance {
-		go func() {
-			if !b.IsBalanced() {
-				b.Rebalance()
-			}
-		}()
+		if !b.IsBalanced() {
+			b.Rebalance()
+		}
 	}
 }

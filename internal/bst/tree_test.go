@@ -1,6 +1,7 @@
 package bst_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/KevinAnthony/go-tree/internal/bst"
@@ -88,7 +89,7 @@ func TestBinarySearchTree_Search(t *testing.T) {
 				So(actual, ShouldResemble, expected)
 			})
 			Convey("should return 0 values when value is not in tree", func() {
-				c := t.Search(types.NewInt(7))
+				c := t.Search(types.NewInt(77))
 				actual := drain(c)
 				So(actual, ShouldHaveLength, 0)
 			})
@@ -109,8 +110,8 @@ func TestBinarySearchTree_Contains(t *testing.T) {
 			Convey("should return true when tree contains value", func() {
 				So(t.Contains(types.NewInt(4)), ShouldBeTrue)
 			})
-			Convey("should return false when tree contains value", func() {
-				So(t.Contains(types.NewInt(6)), ShouldBeFalse)
+			Convey("should return false when tree does not contain value", func() {
+				So(t.Contains(types.NewInt(66)), ShouldBeFalse)
 			})
 		})
 	})
@@ -140,50 +141,85 @@ func TestBinarySearchTree_Count(t *testing.T) {
 
 func TestBinarySearchTree_Delete(t *testing.T) {
 	Convey("Delete", t, func() {
-		t := bts.NewTree(unordered()...)
+		t := bst.NewTree(unordered()...)
 		t.AutoRebalance(false)
 		Convey("should return tree when root is nil", func() {
-			t := bts.NewTree()
+			t := bst.NewTree()
 			t.Delete(types.NewInt(77))
 			c := t.Asc()
 			actual := drain(c)
 			So(actual, ShouldHaveLength, 0)
+			So(t.Count(), ShouldEqual, 0)
 		})
 		Convey("should keep other nodes when deleting root", func() {
 			Convey("and count == 1", func() {
-				t := bts.NewTree(types.NewInt(11))
+				t := bst.NewTree(types.NewInt(11))
 				t.Delete(types.NewInt(11))
 				c := t.Asc()
 				actual := drain(c)
 				So(actual, ShouldHaveLength, 0)
+				So(t.Count(), ShouldEqual, 0)
 			})
-			Convey("and count > 1", func() {
-				t.Delete(types.NewInt(3))
-				c := t.Asc()
-				actual := drain(c)
-				So(actual, ShouldHaveLength, len(unordered())-1)
-				So(actual, ShouldNotContain, types.NewInt((3)))
+			Convey("and we try and delete every node", func() {
+				for _, data := range unordered() {
+					closure := data
+					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
+						t.Delete(closure)
+						c := t.Asc()
+						actual := drain(c)
+						So(actual, ShouldNotContain, closure)
+						So(actual, ShouldHaveLength, len(unordered())-1)
+						So(t.Count(), ShouldEqual, len(unordered())-1)
+					})
+				}
+			})
+			Convey("should delete successfully when the tree is all left", func() {
+				left := []types.Data{
+					types.NewInt(5),
+					types.NewInt(4),
+					types.NewInt(3),
+					types.NewInt(2),
+					types.NewInt(1)}
+				t := bst.NewTree(left...)
+				for _, data := range left {
+					closure := data
+					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
+						t.Delete(closure)
+						c := t.Asc()
+						actual := drain(c)
+						So(actual, ShouldNotContain, closure)
+						So(actual, ShouldHaveLength, len(left)-1)
+						So(t.Count(), ShouldEqual, len(left)-1)
+					})
+				}
+			})
+			Convey("should delete successfully when the tree is all right", func() {
+				right := []types.Data{
+					types.NewInt(1),
+					types.NewInt(2),
+					types.NewInt(3),
+					types.NewInt(4),
+					types.NewInt(5)}
+				t := bst.NewTree(right...)
+				for _, data := range right {
+					closure := data
+					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
+						t.Delete(closure)
+						c := t.Asc()
+						actual := drain(c)
+						So(actual, ShouldNotContain, closure)
+						So(actual, ShouldHaveLength, len(right)-1)
+						So(t.Count(), ShouldEqual, len(right)-1)
+					})
+				}
 			})
 		})
-		Convey("should keep other nodes when deleting leaf", func() {
-			t.Delete(types.NewInt(10))
-			c := t.Asc()
-			actual := drain(c)
-			So(actual, ShouldHaveLength, len(unordered())-1)
-			So(actual, ShouldNotContain, types.NewInt((10)))
-		})
-		// Convey("should keep other nodes when deleting middle node", func() {
-		// 	t.Delete(types.NewInt(9))
-		// 	c := t.Asc()
-		// 	actual := drain(c)
-		// 	So(actual, ShouldHaveLength, len(unordered())-1)
-		// 	So(actual, ShouldNotContain, types.NewInt((9)))
-		// })
 		Convey("should keep other nodes when deleting nothing, called with missing type", func() {
 			t.Delete(types.NewInt(99))
 			c := t.Asc()
 			actual := drain(c)
 			So(actual, ShouldHaveLength, len(unordered()))
+			So(t.Count(), ShouldEqual, len(unordered()))
 		})
 	})
 }
