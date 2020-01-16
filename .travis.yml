@@ -1,6 +1,6 @@
+os:linux
 dist: bionic
 language: go
-sudo: false
 go:
   - 1.13.x
 env: GO111MODULE=on GOFLAGS='-mod vendor'
