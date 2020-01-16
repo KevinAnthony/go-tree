@@ -1,4 +1,4 @@
-//nolint: funlen
+//nolint: funlen, gomnd
 package bst_test
 
 import (
