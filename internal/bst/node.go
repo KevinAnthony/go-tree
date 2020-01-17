@@ -58,25 +58,21 @@ func (b *binaryNode) search(data types.Data, c chan<- types.Node) {
 	if b == nil {
 		return
 	}
-	if b.data.GreaterThan(data) {
-		b.left.search(data, c)
-	}
+	b.left.search(data, c)
 	if b.data.Equals(data) {
 		c <- b
 	}
-	if b.data.LessThanOrEqual(data) {
-		b.right.search(data, c)
-	}
+	b.right.search(data, c)
 }
 
 func (b *binaryNode) contains(data types.Data) bool {
 	if b.data.Equals(data) {
 		return true
 	}
-	if b.left != nil && b.left.data.LessThanOrEqual(data) && b.left.contains(data) {
+	if b.left != nil && data.LessThan(b.data) && b.left.contains(data) {
 		return true
 	}
-	if b.right != nil && b.right.data.GreaterThanOrEqual(data) && b.right.contains(data) {
+	if b.right != nil && data.GreaterThanOrEqual(b.data) && b.right.contains(data) {
 		return true
 	}
 	return false

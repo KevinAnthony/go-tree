@@ -1,4 +1,4 @@
-//nolint: funlen, gomnd
+//nolint: funlen, gomnd, scopelint
 package bst_test
 
 import (
@@ -99,10 +99,14 @@ func TestBinarySearchTree_Contains(t *testing.T) {
 			})
 		})
 		Convey("when tree has data", func() {
-			t := bst.NewTree(unordered()...)
-			Convey("should return true when tree contains value", func() {
-				So(t.Contains(types.NewInt(4)), ShouldBeTrue)
-			})
+			u := unordered()
+			t := bst.NewTree(u...)
+			for _, i := range u {
+				Convey(fmt.Sprintf("should return true when tree contains value: %s", i), func() {
+					v := t.Contains(i)
+					So(v, ShouldBeTrue)
+				})
+			}
 			Convey("should return false when tree does not contain value", func() {
 				So(t.Contains(types.NewInt(66)), ShouldBeFalse)
 			})
@@ -249,6 +253,7 @@ func TestBinarySearchTree_InsertMany(t *testing.T) {
 func TestBinarySearchTree_IsBalanced(t *testing.T) {
 	Convey("IsBalanced", t, func() {
 		t := bst.NewTree()
+		t.AutoRebalance(false)
 		Convey("should be balanced if empty", func() {
 			So(t.IsBalanced(), ShouldBeTrue)
 		})
