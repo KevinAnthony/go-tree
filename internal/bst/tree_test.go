@@ -1,4 +1,4 @@
-//nolint: funlen, gomnd
+//nolint: funlen, gomnd, scopelint
 package bst_test
 
 import (
@@ -22,8 +22,7 @@ func TestNewTree(t *testing.T) {
 		Convey("should accept unordered list and return ordered list", func() {
 			f := func() {
 				t := bst.NewTree(unordered()...)
-				c := t.Asc()
-				actual := drain(c)
+				actual := drain(t.Asc())
 				So(actual, ShouldResemble, asc())
 			}
 			So(f, ShouldNotPanic)
@@ -35,14 +34,12 @@ func TestBinarySearchTree_Asc(t *testing.T) {
 	Convey("Asc", t, func() {
 		Convey("should return asc ordered list", func() {
 			t := bst.NewTree(unordered()...)
-			c := t.Asc()
-			actual := drain(c)
+			actual := drain(t.Asc())
 			So(actual, ShouldResemble, asc())
 		})
 		Convey("should return no values when tree is empty", func() {
 			t := bst.NewTree()
-			c := t.Asc()
-			actual := drain(c)
+			actual := drain(t.Asc())
 			So(actual, ShouldBeEmpty)
 		})
 	})
@@ -52,14 +49,12 @@ func TestBinarySearchTree_Desc(t *testing.T) {
 	Convey("Desc", t, func() {
 		Convey("should return asc ordered list", func() {
 			t := bst.NewTree(unordered()...)
-			c := t.Desc()
-			actual := drain(c)
+			actual := drain(t.Desc())
 			So(actual, ShouldResemble, desc())
 		})
 		Convey("should return no values when tree is empty", func() {
 			t := bst.NewTree()
-			c := t.Desc()
-			actual := drain(c)
+			actual := drain(t.Desc())
 			So(actual, ShouldBeEmpty)
 		})
 	})
@@ -76,8 +71,7 @@ func TestBinarySearchTree_Search(t *testing.T) {
 		Convey("when tree is empty", func() {
 			t := bst.NewTree()
 			Convey("should return no data", func() {
-				c := t.Search(types.NewInt(3))
-				actual := drain(c)
+				actual := drain(t.Search(types.NewInt(3)))
 				So(actual, ShouldBeEmpty)
 			})
 		})
@@ -85,13 +79,11 @@ func TestBinarySearchTree_Search(t *testing.T) {
 			t := bst.NewTree(unordered()...)
 			t.InsertMany(expected[1], expected[2], expected[3])
 			Convey("should return 4 values when value is in the tree", func() {
-				c := t.Search(types.NewInt(3))
-				actual := drain(c)
+				actual := drain(t.Search(types.NewInt(3)))
 				So(actual, ShouldResemble, expected)
 			})
 			Convey("should return 0 values when value is not in tree", func() {
-				c := t.Search(types.NewInt(77))
-				actual := drain(c)
+				actual := drain(t.Search(types.NewInt(77)))
 				So(actual, ShouldHaveLength, 0)
 			})
 		})
@@ -107,22 +99,19 @@ func TestBinarySearchTree_Contains(t *testing.T) {
 			})
 		})
 		Convey("when tree has data", func() {
-			t := bst.NewTree(unordered()...)
-			Convey("should return true when tree contains value", func() {
-				So(t.Contains(types.NewInt(4)), ShouldBeTrue)
-			})
+			u := unordered()
+			t := bst.NewTree(u...)
+			for _, i := range u {
+				Convey(fmt.Sprintf("should return true when tree contains value: %s", i), func() {
+					v := t.Contains(i)
+					So(v, ShouldBeTrue)
+				})
+			}
 			Convey("should return false when tree does not contain value", func() {
 				So(t.Contains(types.NewInt(66)), ShouldBeFalse)
 			})
 		})
 	})
-}
-
-func TestBinarySearchTree_AutoRebalance(t *testing.T) {
-	//TODO the best way to test this seems to be to have a tree that needs balancing,
-	// 		turn on autobalancing, and see if it's balanced
-	// The 2nd convey is to have a tree that IS balnanced,
-	// 		turn off authbalancing, unbalance it, then make sure it remains unbalanced.
 }
 
 func TestBinarySearchTree_Count(t *testing.T) {
@@ -147,8 +136,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 		Convey("should return tree when root is nil", func() {
 			t := bst.NewTree()
 			t.Delete(types.NewInt(77))
-			c := t.Asc()
-			actual := drain(c)
+			actual := drain(t.Asc())
 			So(actual, ShouldHaveLength, 0)
 			So(t.Count(), ShouldEqual, 0)
 		})
@@ -156,8 +144,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 			Convey("and count == 1", func() {
 				t := bst.NewTree(types.NewInt(11))
 				t.Delete(types.NewInt(11))
-				c := t.Asc()
-				actual := drain(c)
+				actual := drain(t.Asc())
 				So(actual, ShouldHaveLength, 0)
 				So(t.Count(), ShouldEqual, 0)
 			})
@@ -166,8 +153,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 					closure := data
 					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
 						t.Delete(closure)
-						c := t.Asc()
-						actual := drain(c)
+						actual := drain(t.Asc())
 						So(actual, ShouldNotContain, closure)
 						So(actual, ShouldHaveLength, len(unordered())-1)
 						So(t.Count(), ShouldEqual, len(unordered())-1)
@@ -186,8 +172,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 					closure := data
 					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
 						t.Delete(closure)
-						c := t.Asc()
-						actual := drain(c)
+						actual := drain(t.Asc())
 						So(actual, ShouldNotContain, closure)
 						So(actual, ShouldHaveLength, len(left)-1)
 						So(t.Count(), ShouldEqual, len(left)-1)
@@ -206,8 +191,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 					closure := data
 					Convey(fmt.Sprintf("try and delete node: %s", closure), func() {
 						t.Delete(closure)
-						c := t.Asc()
-						actual := drain(c)
+						actual := drain(t.Asc())
 						So(actual, ShouldNotContain, closure)
 						So(actual, ShouldHaveLength, len(right)-1)
 						So(t.Count(), ShouldEqual, len(right)-1)
@@ -217,8 +201,7 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 		})
 		Convey("should keep other nodes when deleting nothing, called with missing type", func() {
 			t.Delete(types.NewInt(99))
-			c := t.Asc()
-			actual := drain(c)
+			actual := drain(t.Asc())
 			So(actual, ShouldHaveLength, len(unordered()))
 			So(t.Count(), ShouldEqual, len(unordered()))
 		})
@@ -226,19 +209,167 @@ func TestBinarySearchTree_Delete(t *testing.T) {
 }
 
 func TestBinarySearchTree_Insert(t *testing.T) {
-
+	Convey("Insert", t, func() {
+		t := bst.NewTree()
+		start := drain(t.Asc())
+		So(start, ShouldBeEmpty)
+		Convey("should insert into tree", func() {
+			t.Insert(types.NewInt(7))
+			intermitten := drain(t.Asc())
+			So(intermitten, ShouldHaveLength, 1)
+			So(intermitten, ShouldContain, types.NewInt(7))
+			t.Insert(types.NewInt(77))
+			final := drain(t.Asc())
+			So(final, ShouldHaveLength, 2)
+			So(final, ShouldContain, types.NewInt(7))
+			So(final, ShouldContain, types.NewInt(77))
+		})
+	})
 }
 
 func TestBinarySearchTree_InsertMany(t *testing.T) {
-
+	Convey("Insert", t, func() {
+		t := bst.NewTree()
+		start := drain(t.Asc())
+		So(start, ShouldBeEmpty)
+		Convey("should insert one into tree", func() {
+			t.InsertMany(types.NewInt(7))
+			actual := drain(t.Asc())
+			So(actual, ShouldHaveLength, 1)
+			So(actual, ShouldContain, types.NewInt(7))
+		})
+		Convey("should insert many into tree", func() {
+			expected := unordered()
+			t.InsertMany(expected...)
+			actual := drain(t.Asc())
+			So(actual, ShouldHaveLength, len(expected))
+			for _, exp := range expected {
+				So(actual, ShouldContain, exp)
+			}
+		})
+	})
 }
 
 func TestBinarySearchTree_IsBalanced(t *testing.T) {
+	Convey("IsBalanced", t, func() {
+		t := bst.NewTree()
+		t.AutoRebalance(false)
+		Convey("should be balanced if empty", func() {
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should be balanced with", func() {
+			Convey("one node", func() {
+				t.Insert(types.NewInt(7))
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("one + left", func() {
+				t.Insert(types.NewInt(7))
+				t.Insert(types.NewInt(6))
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("one + right", func() {
+				t.Insert(types.NewInt(7))
+				t.Insert(types.NewInt(8))
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("even tree", func() {
+				t.Insert(types.NewInt(7))
+				t.Insert(types.NewInt(8))
+				t.Insert(types.NewInt(6))
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+		})
+		Convey("should report as unbalanced", func() {
+			Convey("when left heavy", func() {
+				t.Insert(types.NewInt(3))
+				t.Insert(types.NewInt(2))
+				t.Insert(types.NewInt(1))
+				So(t.IsBalanced(), ShouldBeFalse)
+			})
+			Convey("when right heavy", func() {
+				t.Insert(types.NewInt(1))
+				t.Insert(types.NewInt(2))
+				t.Insert(types.NewInt(3))
+				So(t.IsBalanced(), ShouldBeFalse)
+			})
+			Convey("when randomly unbalanced", func() {
+				t.InsertMany(unordered()...)
+				So(t.IsBalanced(), ShouldBeFalse)
+			})
+		})
+	})
+}
 
+func TestBinarySearchTree_AutoRebalance(t *testing.T) {
+	Convey("AutoRebalance", t, func() {
+		t := bst.NewTree()
+		Convey("should respect autorelance flag when it's turned on", func() {
+			t.AutoRebalance(true)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should autobalance when flag is turned on", func() {
+			t.AutoRebalance(false)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeFalse)
+			t.AutoRebalance(true)
+			t.Insert(types.NewInt(999))
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should not autobalance once flag is turned off", func() {
+			t.AutoRebalance(true)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeTrue)
+			t.AutoRebalance(false)
+			t.Insert(types.NewInt(997))
+			t.Insert(types.NewInt(998))
+			t.Insert(types.NewInt(999))
+			So(t.IsBalanced(), ShouldBeFalse)
+		})
+	})
 }
 
 func TestBinarySearchTree_Rebalance(t *testing.T) {
-
+	Convey("Rebalance", t, func() {
+		t := bst.NewTree()
+		t.AutoRebalance(false)
+		Convey("should pass when root is nil", func() {
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should pass when root is leaf", func() {
+			t.Insert(types.NewInt(7))
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should pass tree is balanced", func() {
+			t.Insert(types.NewInt(7))
+			t.Insert(types.NewInt(6))
+			t.Insert(types.NewInt(8))
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("when tree is not balanced", func() {
+			Convey("and is right heavy", func() {
+				t.InsertMany(types.NewInt(3), types.NewInt(2), types.NewInt(1))
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("and is left heavy", func() {
+				t.InsertMany(types.NewInt(1), types.NewInt(2), types.NewInt(3))
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("and is random", func() {
+				t.InsertMany(unordered()...)
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+		})
+	})
 }
 
 //unbalanced tree
