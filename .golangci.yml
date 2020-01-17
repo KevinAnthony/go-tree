@@ -8,6 +8,5 @@ output:
 linters:
   enable-all: true
   disable:
-    - gomnd
     - wsl
     - godox
