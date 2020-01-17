@@ -33,6 +33,10 @@ func (i intData) Equals(d Data) bool {
 	return i == getIntData(d)
 }
 
+func (i intData) Get() interface{} {
+	return int(getIntData(i))
+}
+
 func getIntData(d Data) intData {
 	switch i := d.(type) {
 	case intData:

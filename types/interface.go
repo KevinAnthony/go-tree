@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type Node interface {
 	GetData() Data
 	IsLeaf() bool
@@ -20,9 +22,11 @@ type Tree interface {
 }
 
 type Data interface {
+	fmt.Stringer
 	GreaterThan(Data) bool
 	LessThan(Data) bool
 	GreaterThanOrEqual(Data) bool
 	LessThanOrEqual(Data) bool
 	Equals(Data) bool
+	Get() interface{}
 }

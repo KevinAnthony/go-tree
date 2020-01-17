@@ -12,6 +12,14 @@ type DataMock struct {
 	mock.Mock
 }
 
+func (m *DataMock) String() string {
+	return m.Called().String(0)
+}
+
+func (m *DataMock) Get() interface{} {
+	return m.Called().Get(0)
+}
+
 func (m *DataMock) GreaterThan(data types.Data) bool {
 	return m.Called(data).Bool(0)
 }
