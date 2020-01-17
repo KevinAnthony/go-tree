@@ -16,7 +16,7 @@ type binarySearchTree struct {
 
 func NewTree(data ...types.Data) types.Tree {
 	t := binarySearchTree{
-		autoRebalance: true,
+		autoRebalance: false,
 	}
 	if len(data) > 0 {
 		t.InsertMany(data...)

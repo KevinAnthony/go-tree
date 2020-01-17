@@ -34,7 +34,7 @@ func (i intData) Equals(d Data) bool {
 }
 
 func (i intData) Get() interface{} {
-	return int(i)
+	return int(getIntData(i))
 }
 
 func getIntData(d Data) intData {

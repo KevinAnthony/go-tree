@@ -132,7 +132,6 @@ func TestBinarySearchTree_Count(t *testing.T) {
 func TestBinarySearchTree_Delete(t *testing.T) {
 	Convey("Delete", t, func() {
 		t := bst.NewTree(unordered()...)
-		t.AutoRebalance(false)
 		Convey("should return tree when root is nil", func() {
 			t := bst.NewTree()
 			t.Delete(types.NewInt(77))
@@ -253,7 +252,6 @@ func TestBinarySearchTree_InsertMany(t *testing.T) {
 func TestBinarySearchTree_IsBalanced(t *testing.T) {
 	Convey("IsBalanced", t, func() {
 		t := bst.NewTree()
-		t.AutoRebalance(false)
 		Convey("should be balanced if empty", func() {
 			So(t.IsBalanced(), ShouldBeTrue)
 		})

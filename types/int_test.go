@@ -25,6 +25,13 @@ func TestIntData_Equals(t *testing.T) {
 			So(b.Equals(b), ShouldBeTrue)
 			So(b.Equals(b2), ShouldBeTrue)
 		})
+		Convey("should return true when B == *B", func() {
+			So(b.Equals(b), ShouldBeTrue)
+			So(b.Equals(b2), ShouldBeTrue)
+		})
+		Convey("should panic when passing a none IntData type as parameter", func() {
+			//TODO this once we have more then just an int type
+		})
 	})
 }
 
