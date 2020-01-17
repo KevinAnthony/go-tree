@@ -25,26 +25,15 @@ func NewTree(data ...types.Data) types.Tree {
 }
 
 func (b *binarySearchTree) Insert(value types.Data) {
-	node := &binaryNode{
-		data:  value,
-		left:  nil,
-		right: nil,
-	}
-	b.mutex.Lock()
-	defer b.mutex.Unlock()
-	b.count++
-	if b.root == nil {
-		b.root = node
-		return
-	}
-	b.root.insert(node)
+	b.insert(value)
+	b.autoRebalanceMaybe()
 }
 
 // NOTE: we do not acquire the mutex here because insert uses it.
 // if you mutex on both insert  and  insertmany then you will deadlock
 func (b *binarySearchTree) InsertMany(values ...types.Data) {
 	for _, value := range values {
-		b.Insert(value)
+		b.insert(value)
 	}
 	b.autoRebalanceMaybe()
 }
@@ -88,21 +77,6 @@ func (b *binarySearchTree) Desc() <-chan types.Node {
 	return b.traverse(b.root.postorder)
 }
 
-func (b *binarySearchTree) Rebalance() {
-	b.mutex.Lock()
-	defer b.mutex.Unlock()
-	//TODO implement
-}
-
-func (b *binarySearchTree) IsBalanced() bool {
-	b.detectBalance()
-	return b.isBalanced
-}
-
-func (b *binarySearchTree) AutoRebalance(rebalance bool) {
-	b.autoRebalance = rebalance
-}
-
 func (b *binarySearchTree) traverse(f func(c chan<- types.Node)) <-chan types.Node {
 	c := make(chan types.Node)
 	go func(c chan<- types.Node) {
@@ -115,21 +89,18 @@ func (b *binarySearchTree) traverse(f func(c chan<- types.Node)) <-chan types.No
 	return c
 }
 
-func (b *binarySearchTree) detectBalance() {
+func (b *binarySearchTree) insert(value types.Data) {
+	node := &binaryNode{
+		data:  value,
+		left:  nil,
+		right: nil,
+	}
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+	b.count++
 	if b.root == nil {
-		b.isBalanced = true
+		b.root = node
+		return
 	}
-	b.mutex.RLock()
-	defer b.mutex.RUnlock()
-	// we ignore the height, since it is only used for calculations
-	b.isBalanced, _ = b.root.isBalanced()
-}
-
-//TODO i would love for this to be async
-func (b *binarySearchTree) autoRebalanceMaybe() {
-	if b.autoRebalance {
-		if !b.IsBalanced() {
-			b.Rebalance()
-		}
-	}
+	b.root.insert(node)
 }
