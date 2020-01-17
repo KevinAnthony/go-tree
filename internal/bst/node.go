@@ -84,6 +84,9 @@ func (b *binaryNode) contains(data types.Data) bool {
 
 //returns is balanced, and it's height. this allows us O(n) vs O(n^2)
 func (b *binaryNode) isBalanced() (bool, float64) {
+	if b == nil {
+		return true, 0
+	}
 	leftHeight := 0.0
 	leftBalanced := true
 	rightHeight := 0.0
