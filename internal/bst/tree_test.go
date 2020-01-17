@@ -296,14 +296,75 @@ func TestBinarySearchTree_IsBalanced(t *testing.T) {
 }
 
 func TestBinarySearchTree_AutoRebalance(t *testing.T) {
-	//TODO the best way to test this seems to be to have a tree that needs balancing,
-	// 		turn on autobalancing, and see if it's balanced
-	// The 2nd convey is to have a tree that IS balnanced,
-	// 		turn off authbalancing, unbalance it, then make sure it remains unbalanced.
+	Convey("AutoRebalance", t, func() {
+		t := bst.NewTree()
+		Convey("should respect autorelance flag when it's turned on", func() {
+			t.AutoRebalance(true)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should autobalance when flag is turned on", func() {
+			t.AutoRebalance(false)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeFalse)
+			t.AutoRebalance(true)
+			t.Insert(types.NewInt(999))
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should not autobalance once flag is turned off", func() {
+			t.AutoRebalance(true)
+			t.InsertMany(unordered()...)
+			So(t.IsBalanced(), ShouldBeTrue)
+			t.AutoRebalance(false)
+			t.Insert(types.NewInt(997))
+			t.Insert(types.NewInt(998))
+			t.Insert(types.NewInt(999))
+			So(t.IsBalanced(), ShouldBeFalse)
+		})
+	})
 }
 
 func TestBinarySearchTree_Rebalance(t *testing.T) {
-
+	Convey("Rebalance", t, func() {
+		t := bst.NewTree()
+		t.AutoRebalance(false)
+		Convey("should pass when root is nil", func() {
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should pass when root is leaf", func() {
+			t.Insert(types.NewInt(7))
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("should pass tree is balanced", func() {
+			t.Insert(types.NewInt(7))
+			t.Insert(types.NewInt(6))
+			t.Insert(types.NewInt(8))
+			t.Rebalance()
+			So(t.IsBalanced(), ShouldBeTrue)
+		})
+		Convey("when tree is not balanced", func() {
+			Convey("and is right heavy", func() {
+				t.InsertMany(types.NewInt(3), types.NewInt(2), types.NewInt(1))
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("and is left heavy", func() {
+				t.InsertMany(types.NewInt(1), types.NewInt(2), types.NewInt(3))
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+			Convey("and is random", func() {
+				t.InsertMany(unordered()...)
+				So(t.IsBalanced(), ShouldBeFalse)
+				t.Rebalance()
+				So(t.IsBalanced(), ShouldBeTrue)
+			})
+		})
+	})
 }
 
 //unbalanced tree

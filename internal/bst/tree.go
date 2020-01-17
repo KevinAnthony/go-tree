@@ -25,26 +25,15 @@ func NewTree(data ...types.Data) types.Tree {
 }
 
 func (b *binarySearchTree) Insert(value types.Data) {
-	node := &binaryNode{
-		data:  value,
-		left:  nil,
-		right: nil,
-	}
-	b.mutex.Lock()
-	defer b.mutex.Unlock()
-	b.count++
-	if b.root == nil {
-		b.root = node
-		return
-	}
-	b.root.insert(node)
+	b.insert(value)
+	b.autoRebalanceMaybe()
 }
 
 // NOTE: we do not acquire the mutex here because insert uses it.
 // if you mutex on both insert  and  insertmany then you will deadlock
 func (b *binarySearchTree) InsertMany(values ...types.Data) {
 	for _, value := range values {
-		b.Insert(value)
+		b.insert(value)
 	}
 	b.autoRebalanceMaybe()
 }
@@ -98,4 +87,20 @@ func (b *binarySearchTree) traverse(f func(c chan<- types.Node)) <-chan types.No
 		f(c)
 	}(c)
 	return c
+}
+
+func (b *binarySearchTree) insert(value types.Data) {
+	node := &binaryNode{
+		data:  value,
+		left:  nil,
+		right: nil,
+	}
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+	b.count++
+	if b.root == nil {
+		b.root = node
+		return
+	}
+	b.root.insert(node)
 }

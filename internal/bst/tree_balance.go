@@ -1,9 +1,15 @@
 package bst
 
+import "github.com/KevinAnthony/go-tree/types"
+
 func (b *binarySearchTree) Rebalance() {
+	if b == nil || b.root == nil || b.root.IsLeaf() || b.isBalanced {
+		return
+	}
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
-	//TODO implement
+	list := b.getAscList()
+	b.root = b.buildTree(list, 0, len(list)-1)
 }
 
 func (b *binarySearchTree) IsBalanced() bool {
@@ -31,5 +37,27 @@ func (b *binarySearchTree) autoRebalanceMaybe() {
 		if !b.IsBalanced() {
 			b.Rebalance()
 		}
+	}
+}
+
+func (b *binarySearchTree) getAscList() []types.Data {
+	actual := make([]types.Data, 0)
+	c := b.traverse(b.root.preorder)
+	for data := range c {
+		actual = append(actual, data.GetData())
+	}
+	return actual
+}
+
+func (b *binarySearchTree) buildTree(list []types.Data, start, end int) *binaryNode {
+	if start > end {
+		return nil
+	}
+	mid := (start + end) / 2
+	data := list[mid]
+	return &binaryNode{
+		data:  data,
+		left:  b.buildTree(list, start, mid-1),
+		right: b.buildTree(list, mid+1, end),
 	}
 }
